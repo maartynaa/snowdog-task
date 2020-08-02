@@ -27,6 +27,34 @@ class Books extends AdminAbstract
         require __DIR__ . '/../../view/admin/books/edit.phtml';
     }
 
+    public function importBooks(): void
+    {
+        require __DIR__ . '/../../view/admin/books/import.phtml';
+    }
+
+    public function importBooksPost(): void
+    {
+        $file = $_FILES['file']['tmp_name'];
+        $handle = fopen($file, "r");
+
+        $flag = true;
+        while (($content = fgetcsv($handle, 10000, ",")) != false)
+        {
+            if($flag) { $flag = false; continue; }
+            $title = $content[0];
+            $author = $content[1];
+            $isbn = $content[2];
+
+
+            $this->bookManager->create($title, $author, $isbn);
+        }
+
+
+        $_SESSION['flash'] = "File imported successfully";
+        header('Location: /admin');
+
+    }
+
     public function newBookPost(): void
     {
         $title = $_POST['title'];
