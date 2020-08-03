@@ -36,6 +36,8 @@ RouteRepository::registerRoute('GET', '/admin/new_book', Admin\Books::class, 'ne
 RouteRepository::registerRoute('POST', '/admin/new_book', Admin\Books::class, 'newBookPost');
 RouteRepository::registerRoute('GET', '/admin/import_books', Admin\Books::class, 'importBooks');
 RouteRepository::registerRoute('POST', '/admin/import_books', Admin\Books::class, 'importBooksPost');
+RouteRepository::registerRoute('GET', '/admin/borrowed_books', Admin\Books::class, 'borrowedBooks');
+RouteRepository::registerRoute('POST', '/admin/borrowed_books', Admin\Books::class, 'borrowedBooks');
 RouteRepository::registerRoute('GET', '/admin/edit_book/{id:\d+}', Admin\Books::class, 'edit');
 RouteRepository::registerRoute('POST', '/admin/edit_book/{id:\d+}', Admin\Books::class, 'editPost');
 RouteRepository::registerRoute('GET', '/admin/user/list/{isActive:\d+}', Admin\User::class, 'list');

@@ -32,6 +32,11 @@ class Books extends AdminAbstract
         require __DIR__ . '/../../view/admin/books/import.phtml';
     }
 
+    public function borrowedBooks(): void
+    {
+        require __DIR__ . '/../../view/admin/books/borrowed.phtml';
+    }
+
     public function importBooksPost(): void
     {
         $file = $_FILES['file']['tmp_name'];
@@ -107,4 +112,12 @@ class Books extends AdminAbstract
     {
         return $this->bookManager->getAllBooks();
     }
+
+
+    private function getFilterBooks(int $day): array
+    {  
+        return $this->bookManager->getBookByDay($day);
+    }
+
+    
 }

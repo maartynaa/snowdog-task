@@ -39,6 +39,15 @@ class BookManager
         $statement->execute($binds);
     }
 
+    public function getBookByDay(int $day){
+
+        $query = $this->database->prepare('SELECT id, title, author, isbn, borrowed, borrowed_at FROM books  INNER JOIN borrows ON books.id = book_id AND borrowed_at < NOW()- INTERVAL :day DAY');
+        $query->setFetchMode(Database::FETCH_CLASS, Book::class);
+        $query->execute([':day' => $day]);
+
+        return $query->fetchAll(Database::FETCH_CLASS, Book::class);
+    }
+
     public function getBookById(int $id)
     {
         $query = $this->database->prepare('SELECT * FROM books WHERE id = :id');
@@ -61,4 +70,5 @@ class BookManager
 
         return $query->fetchAll(Database::FETCH_CLASS, Book::class);
     }
+
 }
