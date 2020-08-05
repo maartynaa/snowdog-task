@@ -24,7 +24,7 @@ class Books extends AdminAbstract
 
     public function newBook(): void
     {
-        require __DIR__ . '/../../view/admin/books/edit.phtml';
+        require __DIR__ . '/../../view/admin/books/add.phtml';
     }
 
     public function importBooks(): void
@@ -62,20 +62,50 @@ class Books extends AdminAbstract
 
     public function newBookPost(): void
     {
-        $title = $_POST['title'];
-        $author = $_POST['author'];
-        $isbn = $_POST['isbn'];
 
-        if (empty($title) || empty($author) || empty($isbn)) {
-            $_SESSION['flash'] = 'Missing data';
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-            return;
+        if(isset($_POST['submit'])){
+            $isbn = $_POST['isbn'];
+
+            $path = 'https://openlibrary.org/api/books?bibkeys='. $isbn . '&jscmd=details&format=json';
+
+            $json = file_get_contents($path);
+
+            $arr = json_decode($json, true);
+
+            if(empty($arr)){
+                $_SESSION['flash'] = 'There is no such ISBN';
+                header('Location: ' . $_SERVER['HTTP_REFERER']);
+                return;
+            }
+             
+            $title = $arr[$isbn]["details"]["title"];
+            $author = $arr[$isbn]["details"]["authors"][0]["name"];
+
+            $this->bookManager->create($title, $author, $isbn);
+
+            $_SESSION['flash'] = "Book $title by $author saved!";
+            header('Location: /admin');
+            
         }
 
-        $this->bookManager->create($title, $author, $isbn);
+        else {
+            $title = $_POST['title'];
+            $author = $_POST['author'];
+            $isbn = $_POST['isbn'];
 
-        $_SESSION['flash'] = "Book $title by $author saved!";
-        header('Location: /admin');
+            if (empty($title) || empty($author) || empty($isbn)) {
+                $_SESSION['flash'] = 'Missing data';
+                header('Location: ' . $_SERVER['HTTP_REFERER']);
+                return;
+            }
+
+            $this->bookManager->create($title, $author, $isbn);
+
+            $_SESSION['flash'] = "Book $title by $author saved!";
+            header('Location: /admin');
+        }
+
+        
     }
 
     public function edit(int $id): void
