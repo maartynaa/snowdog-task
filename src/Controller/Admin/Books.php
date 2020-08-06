@@ -62,14 +62,23 @@ class Books extends AdminAbstract
 
     public function newBookPost(): void
     {
+        
+        $isbn = $_POST['isbn'];
+        $for_adults = $_POST['adult'];
+
+        if ($for_adults == 1){
+            $for_adults = true;
+        }
+        else {
+            $for_adults = false;
+        }
+
 
         if(isset($_POST['submit'])){
-            $isbn = $_POST['isbn'];
 
             $path = 'https://openlibrary.org/api/books?bibkeys='. $isbn . '&jscmd=details&format=json';
 
             $json = file_get_contents($path);
-
             $arr = json_decode($json, true);
 
             if(empty($arr)){
@@ -79,32 +88,26 @@ class Books extends AdminAbstract
             }
              
             $title = $arr[$isbn]["details"]["title"];
-            $author = $arr[$isbn]["details"]["authors"][0]["name"];
-
-            $this->bookManager->create($title, $author, $isbn);
-
-            $_SESSION['flash'] = "Book $title by $author saved!";
-            header('Location: /admin');
-            
+            $author = $arr[$isbn]["details"]["authors"][0]["name"];            
         }
 
         else {
             $title = $_POST['title'];
             $author = $_POST['author'];
-            $isbn = $_POST['isbn'];
-
-            if (empty($title) || empty($author) || empty($isbn)) {
-                $_SESSION['flash'] = 'Missing data';
-                header('Location: ' . $_SERVER['HTTP_REFERER']);
-                return;
-            }
-
-            $this->bookManager->create($title, $author, $isbn);
-
-            $_SESSION['flash'] = "Book $title by $author saved!";
-            header('Location: /admin');
+            
         }
 
+
+        if (empty($title) || empty($author) || empty($isbn)) {
+            $_SESSION['flash'] = 'Missing data';
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            return;
+        }
+
+        $this->bookManager->create($title, $author, $isbn, $for_adults);
+
+        $_SESSION['flash'] = "Book $title by $author saved!";
+        header('Location: /admin');
         
     }
 
@@ -125,6 +128,13 @@ class Books extends AdminAbstract
         $title = $_POST['title'];
         $author = $_POST['author'];
         $isbn = $_POST['isbn'];
+        $for_adults = $_POST['adult'];
+        if ($for_adults == 1){
+            $for_adults = true;
+        }
+        else {
+            $for_adults = false;
+        }
 
         if (empty($title) || empty($author) || empty($isbn)) {
             $_SESSION['flash'] = 'Missing data';
@@ -132,7 +142,7 @@ class Books extends AdminAbstract
             return;
         }
 
-        $this->bookManager->update($id, $title, $author, $isbn);
+        $this->bookManager->update($id, $title, $author, $isbn, $for_adults);
 
         $_SESSION['flash'] = "Book $title by $author saved!";
         header('Location: /admin');

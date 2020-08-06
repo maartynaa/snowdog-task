@@ -13,27 +13,29 @@ class BookManager
         $this->database = $database;
     }
 
-    public function create(string $title, string $author, string $isbn): int
-    {
-        $statement = $this->database->prepare('INSERT INTO books (title, author, isbn) VALUES (:title, :author, :isbn)');
+    public function create(string $title, string $author, string $isbn, int $for_adults = 0): int
+    {   
+        $statement = $this->database->prepare('INSERT INTO books (title, author, isbn, for_adults) VALUES (:title, :author, :isbn, :for_adults)');
         $binds = [
             ':title' => $title,
             ':author' => $author,
-            ':isbn' => $isbn
+            ':isbn' => $isbn,
+            ':for_adults' => $for_adults
         ];
         $statement->execute($binds);
 
         return (int) $this->database->lastInsertId();
     }
 
-    public function update(int $id, string $title, string $author, string $isbn): void
-    {
-        $statement = $this->database->prepare('UPDATE books SET title = :title, author = :author, isbn = :isbn WHERE id = :id');
+    public function update(int $id, string $title, string $author, string $isbn, int $for_adults): void
+    {   
+        $statement = $this->database->prepare('UPDATE books SET title = :title, author = :author, isbn = :isbn, for_adults = :for_adults WHERE id = :id');
         $binds = [
             ':id' => $id,
             ':title' => $title,
             ':author' => $author,
-            ':isbn' => $isbn
+            ':isbn' => $isbn,
+            ':for_adults' => $for_adults
         ];
 
         $statement->execute($binds);
@@ -67,6 +69,13 @@ class BookManager
     public function getAvailableBooks(): array
     {
         $query = $this->database->query('SELECT * FROM books WHERE borrowed = 0');
+
+        return $query->fetchAll(Database::FETCH_CLASS, Book::class);
+    }
+
+    public function getAvailableBooksForChild(): array
+    {
+        $query = $this->database->query('SELECT * FROM books WHERE borrowed = 0 and for_adults=0');
 
         return $query->fetchAll(Database::FETCH_CLASS, Book::class);
     }

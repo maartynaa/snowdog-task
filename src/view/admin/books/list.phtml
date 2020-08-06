@@ -38,6 +38,7 @@ require_once(__DIR__ . '/../../common/header.phtml'); ?>
                 <th>Author</th>
                 <th>ISBN</th>
                 <th>Borrowed</th>
+                <th>For Adults</th>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +49,7 @@ require_once(__DIR__ . '/../../common/header.phtml'); ?>
                 <td><?= $book->getAuthor()?></td>
                 <td><?= $book->getIsbn()?></td>
                 <td><?= $book->isBorrowed() ? 'Yes' : 'No' ?></td>
+                <td><?= $book->isForAdults() ? 'Yes' : 'No' ?></td>
                 <td><a href="/admin/edit_book/<?=$book->getId()?>">Edit</a></td>
             </tr>
             <?php endforeach; ?>

@@ -33,14 +33,15 @@ class UserManager
         return $query->fetch(Database::FETCH_CLASS);
     }
 
-    public function create(string $login, string $password, bool $isAdmin = false, bool $isActive = false): int
+    public function create(string $login, string $password, bool $isAdmin = false, bool $isActive = false, bool $isAdult): int
     {
         $hash = $this->hashPassword($password);
-        $statement = $this->database->prepare('INSERT INTO users (login, password, is_admin, is_active) VALUES (:login, :password, :is_admin, :is_active)');
+        $statement = $this->database->prepare('INSERT INTO users (login, password, is_admin, is_active, is_adult) VALUES (:login, :password, :is_admin, :is_active, :is_adult)');
         $statement->bindParam(':login', $login, Database::PARAM_STR);
         $statement->bindParam(':password', $hash, Database::PARAM_STR);
         $statement->bindParam(':is_admin', $isAdmin, Database::PARAM_BOOL);
         $statement->bindParam(':is_active', $isActive, Database::PARAM_BOOL);
+        $statement->bindParam(':is_adult', $isAdult, Database::PARAM_BOOL);
         $statement->execute();
 
         return (int) $this->database->lastInsertId();
